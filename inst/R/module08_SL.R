@@ -4989,7 +4989,12 @@ sl_validation$server<-function(id,vals){
       shinyjs::toggle('repeats', condition=input$method%in%c('repeatedcv','adaptive_cv'))
       shinyjs::toggle("pleaves",condition=input$method=='LGOCV')
 
-      shinyjs::toggle("spatialBlocks_module",condition=input$method=='spat_cv')
+      req(vals$trainSL_args$data_x)
+      cond_sp<-!is.null(attr(vals$saved_data[[vals$trainSL_args$data_x]],"coords"))&input$method=='spat_cv'
+
+      shinyjs::toggle("spatialBlocks_module",condition=cond_sp)
+
+
       shinyjs::toggle("temporalValidation_module",condition=input$method=='time_cv')
       shinyjs::toggle("spatiotemporalValidation_module",condition=input$method=='st_cv')
       shinyjs::toggle("cvsp_iteration",condition=input$method=='spat_cv' &input$cvsp_selection=="random")
@@ -5370,6 +5375,7 @@ sl_validation$server<-function(id,vals){
           title = "Spatiotemporal Cross-Validation",
           easyClose = TRUE,
           size = "l",
+
           spatiotemporal_validation$ui(ns("spatiotemporal_validation"),cvst_params),
           footer = tagList(
             modalButton("Cancel")
@@ -5655,6 +5661,15 @@ sl_validation$server<-function(id,vals){
 
     output$cvsp_scheme_summary <- renderUI({
       req(input$method=="spat_cv")
+      if(is.null(attr(vals$saved_data[[vals$trainSL_args$data_x]],"coords"))){
+        return(
+          div(style="padding: 10px; background: #fdecea; font-size: 12px;",
+            "Error: Spatial Scheme not avaliable. Coords-Attribute not found in the Training Datalist"
+          )
+
+        )
+      }
+
       if (is.null(cvsp_scheme())) {
         div(style="padding: 10px; background: #fff8dbff; font-size: 12px;",
             em("No spatial cross-validation scheme has been created yet. Use the 'Create spatial CV scheme' button to generate one.")
@@ -5696,8 +5711,12 @@ sl_validation$server<-function(id,vals){
 
       }
     })
+
+
+
     output$cvst_scheme_summary <- renderUI({
       req(input$method=="st_cv")
+
       if (is.null(vals$cvst)) {
         div(style="padding: 10px; background: #fff8dbff; font-size: 12px;",
             em("No spatiotemporal cross-validation scheme has been created yet. Use the 'Create spatiotemporal CV scheme' button to generate one.")
