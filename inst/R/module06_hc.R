@@ -2141,32 +2141,6 @@ consensus_module$server <- function(id, vals, getdata_hc, getmodel_hc,
 
 
 
-ui<-fluidPage(style="padding-top: 20px; width: 100%; overflow: auto; height: 100vh;padding-left: 300px",
-              actionLink('save_bug',"save_bug"),
-
-
-
-              includeCSS("inst/www/styles.css"),
-              includeCSS("inst/www/styles2.css"),
-              includeCSS("inst/www/styles3.css"),
-              useShinyjs(),
-              tags$script(HTML("
-    $(document).ready(function() {
-      $('body').tooltip({
-        selector: '.help-tip',
-        container: 'body',
-        trigger: 'hover',
-        placement: function(tip, element) {
-          return $(element).data('placement') || 'bottom';
-        },
-        delay: { show: 0, hide: 0 }
-      });
-    });
-  ")),
-              hc_module$ui("module_sl"),
-              uiOutput("module_sl_server")
-)
-
 
 
 
